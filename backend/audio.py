@@ -73,8 +73,8 @@ class AudioPipeline:
         
         logger.info(f"Generating TTS with voice: {config.voice_model}")
         
-        # Use faster speed for rap delivery
-        rap_speed = max(config.speed, 1.2)  # Minimum 1.2x speed for rap flow
+        # Use balanced speed for clear rap flow
+        rap_speed = 1.1  # Balanced speed for clear, audible rap with good flow
         
         response = await self.openai_client.audio.speech.create(
             model="tts-1",  # Use tts-1 for speed, tts-1-hd for quality
@@ -108,8 +108,8 @@ class AudioPipeline:
                 enhanced_line = self._enhance_rap_line(line)
                 formatted_lines.append(enhanced_line)
         
-        # Join with strategic pauses
-        return ' ... '.join(formatted_lines)
+        # Join with longer pauses for clearer delivery
+        return ' .... '.join(formatted_lines)
     
     def _enhance_rap_line(self, line: str) -> str:
         """Enhance a single lyric line for better rap delivery"""
@@ -387,8 +387,8 @@ class AudioPipeline:
             # Calculate stretch ratio
             stretch_ratio = current_bpm / target_bpm
             
-            # Only adjust if significantly different
-            if abs(stretch_ratio - 1.0) > 0.1:
+            # Only adjust if very significantly different (preserve natural speech timing)
+            if abs(stretch_ratio - 1.0) > 0.5:
                 # Time-stretch using librosa
                 stretched = librosa.effects.time_stretch(samples, rate=stretch_ratio)
                 
