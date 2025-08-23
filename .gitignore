@@ -205,3 +205,11 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Test outputs
+test_output/
+backend/test_output/
+tests/outputs/
+*.mp3
+*.mp4
+test_*.json

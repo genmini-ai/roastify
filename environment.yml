@@ -1,0 +1,78 @@
+name: roastify
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Core Python
+  - python=3.11
+  - pip
+  
+  # Web framework
+  - fastapi
+  - uvicorn
+  
+  # Data validation and serialization
+  - pydantic
+  
+  # HTTP clients
+  - httpx
+  - requests
+  
+  # Environment management
+  - python-dotenv
+  
+  # Scientific computing
+  - numpy
+  - scipy
+  
+  # Audio processing
+  - librosa
+  - soundfile
+  
+  # Image/Video processing
+  - opencv
+  - pillow
+  
+  # Web scraping
+  - beautifulsoup4
+  - lxml
+  
+  # Database/Caching
+  - redis-py
+  
+  # Async support
+  - asyncio
+  
+  # Utilities
+  - tenacity
+  - aiofiles
+  - python-jose
+  - python-multipart
+  
+  # Development tools
+  - pytest
+  - black
+  - flake8
+  
+  # Jupyter for development/testing
+  - jupyter
+  - ipykernel
+  
+  # Dependencies that need pip
+  - pip:
+    # AI/ML APIs
+    - openai>=1.3.5
+    - anthropic>=0.7.7
+    
+    # Audio processing
+    - pydub
+    - pedalboard
+    
+    # Web automation
+    - playwright
+    
+    # WebSocket support
+    - websockets
+    
+    # Additional utilities
+    - python-jose[cryptography]
