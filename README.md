@@ -4,6 +4,10 @@
 ## 🎯 Project Overview
 Transform any social media profile (LinkedIn/Twitter) into a personalized rap diss track with AI-generated lyrics, voice synthesis, and auto-generated music video. This showcases our any2any content transformation engine in the most memorable way possible.
 
+## 🔥 Demo
+![Roastify Demo](demo.png)
+*Generated rap roast video with AI lyrics, custom beats, and dynamic visuals*
+
 ## 🚀 Quick Start
 
 ```bash

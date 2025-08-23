@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Roastify - LinkedIn Profile to Rap Roast Generator</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P:wght@400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Reset and Base Styles */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Press Start 2P', monospace;
+          background: #000;
+          color: #fff;
+          overflow-x: hidden;
+          font-size: 12px;
+          line-height: 1.6;
+        }
+
+        .app {
+          min-height: 100vh;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+
+        /* Animated Pixel Background */
+        .pixel-background {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: -1;
+          background: 
+            radial-gradient(circle at 25% 25%, #111 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, #222 0%, transparent 50%),
+            linear-gradient(45deg, #000 25%, #111 25%, #111 50%, #000 50%, #000 75%, #111 75%);
+          background-size: 40px 40px, 40px 40px, 20px 20px;
+          animation: pixelMove 20s ease-in-out infinite;
+        }
+
+        @keyframes pixelMove {
+          0%, 100% { transform: translate(0, 0); }
+          25% { transform: translate(-10px, -10px); }
+          50% { transform: translate(10px, -5px); }
+          75% { transform: translate(-5px, 10px); }
+        }
+
+        /* Header Styles */
+        .header {
+          text-align: center;
+          margin-bottom: 40px;
+          animation: glowPulse 2s ease-in-out infinite alternate;
+        }
+
+        .logo {
+          font-size: 32px;
+          margin-bottom: 10px;
+          text-shadow: 
+            0 0 10px #ff4444,
+            0 0 20px #ff4444,
+            0 0 30px #ff4444;
+          letter-spacing: 4px;
+        }
+
+        .fire-emoji {
+          animation: fireFlicker 1.5s ease-in-out infinite alternate;
+          display: inline-block;
+          margin: 0 10px;
+        }
+
+        @keyframes fireFlicker {
+          0% { transform: scale(1) rotate(-5deg); }
+          100% { transform: scale(1.2) rotate(5deg); }
+        }
+
+        .tagline {
+          font-size: 12px;
+          color: #ff6666;
+        }
+
+        @keyframes glowPulse {
+          0% { filter: brightness(1); }
+          100% { filter: brightness(1.3); }
+        }
+
+        /* Form Styles */
+        .roast-form {
+          background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+          border: 4px solid #444;
+          padding: 30px;
+          box-shadow: 
+            inset 0 0 20px rgba(0,0,0,0.8),
+            0 0 40px rgba(255, 68, 68, 0.3);
+          max-width: 600px;
+          width: 100%;
+        }
+
+        .input-group {
+          margin-bottom: 20px;
+        }
+
+        .pixel-label {
+          display: block;
+          margin-bottom: 8px;
+          color: #ff8888;
+          font-size: 10px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+
+        .pixel-input {
+          width: 100%;
+          padding: 12px;
+          background: #000;
+          border: 2px solid #444;
+          color: #fff;
+          font-family: 'Press Start 2P', monospace;
+          font-size: 10px;
+          transition: all 0.3s ease;
+        }
+
+        .pixel-input:focus {
+          outline: none;
+          border-color: #ff4444;
+          box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+        }
+
+        .pixel-select {
+          width: 100%;
+          padding: 12px;
+          background: #000;
+          border: 2px solid #444;
+          color: #fff;
+          font-family: 'Press Start 2P', monospace;
+          font-size: 10px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .pixel-select:focus {
+          outline: none;
+          border-color: #ff4444;
+          box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+        }
+
+        .options-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 20px;
+          margin-bottom: 30px;
+        }
+
+        /* Button Styles */
+        .roast-button {
+          width: 100%;
+          padding: 20px;
+          background: linear-gradient(135deg, #ff4444, #cc0000);
+          border: 4px solid #ff6666;
+          color: #fff;
+          font-family: 'Press Start 2P', monospace;
+          font-size: 14px;
+          cursor: pointer;
+          text-transform: uppercase;
+          letter-spacing: 2px;
+          transition: all 0.3s ease;
+        }
+
+        .roast-button:hover {
+          background: linear-gradient(135deg, #ff6666, #ff0000);
+          transform: scale(1.05);
+          box-shadow: 
+            0 0 30px rgba(255, 68, 68, 0.8),
+            inset 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .button-fire {
+          animation: fireFlicker 1s ease-in-out infinite alternate;
+          display: inline-block;
+          margin: 0 10px;
+        }
+
+        /* Progress Styles */
+        .progress-container {
+          text-align: center;
+          max-width: 500px;
+          width: 100%;
+          padding: 30px;
+          background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+          border: 4px solid #444;
+          box-shadow: 
+            inset 0 0 20px rgba(0,0,0,0.8),
+            0 0 40px rgba(255, 68, 68, 0.3);
+        }
+
+        .progress-message {
+          font-size: 12px;
+          color: #ff8888;
+          margin-bottom: 20px;
+          animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+          0% { text-shadow: 0 0 5px #ff4444; }
+          100% { text-shadow: 0 0 15px #ff4444, 0 0 25px #ff4444; }
+        }
+
+        .progress-bar {
+          width: 100%;
+          height: 30px;
+          background: #000;
+          border: 2px solid #444;
+          margin-bottom: 15px;
+          overflow: hidden;
+        }
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #ff4444, #ff6666, #ff4444);
+          transition: width 0.5s ease;
+          animation: progressShine 2s ease-in-out infinite;
+        }
+
+        @keyframes progressShine {
+          0%, 100% { filter: brightness(1); }
+          50% { filter: brightness(1.3); }
+        }
+
+        .progress-percentage {
+          font-size: 16px;
+          color: #fff;
+          margin-bottom: 20px;
+          text-shadow: 0 0 10px #ff4444;
+        }
+
+        .loading-animation {
+          display: flex;
+          justify-content: center;
+          gap: 20px;
+        }
+
+        .fire-animation {
+          font-size: 24px;
+          animation: bounce 1.5s ease-in-out infinite;
+        }
+
+        .fire-animation:nth-child(2) { animation-delay: 0.3s; }
+        .fire-animation:nth-child(3) { animation-delay: 0.6s; }
+        .fire-animation:nth-child(4) { animation-delay: 0.9s; }
+
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(-10px) scale(1.2); }
+        }
+
+        /* Results Styles */
+        .results-container {
+          text-align: center;
+          max-width: 800px;
+          width: 100%;
+        }
+
+        .results-title {
+          font-size: 18px;
+          margin-bottom: 30px;
+          color: #ff4444;
+          text-shadow: 0 0 20px #ff4444;
+          animation: glowPulse 2s ease-in-out infinite alternate;
+        }
+
+        .video-container {
+          margin-bottom: 30px;
+          border: 4px solid #444;
+          box-shadow: 0 0 40px rgba(255, 68, 68, 0.3);
+        }
+
+        .roast-video {
+          width: 100%;
+          max-width: 100%;
+          height: auto;
+          background: #000;
+        }
+
+        .download-buttons {
+          display: flex;
+          gap: 20px;
+          margin-bottom: 30px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .pixel-button {
+          padding: 15px 25px;
+          background: linear-gradient(135deg, #333, #555);
+          border: 2px solid #666;
+          color: #fff;
+          text-decoration: none;
+          font-family: 'Press Start 2P', monospace;
+          font-size: 10px;
+          transition: all 0.3s ease;
+          display: inline-block;
+        }
+
+        .pixel-button:hover {
+          background: linear-gradient(135deg, #555, #777);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .another-button {
+          background: linear-gradient(135deg, #ff4444, #cc0000);
+          font-size: 12px;
+        }
+
+        /* Error Styles */
+        .error-container {
+          text-align: center;
+          max-width: 400px;
+          width: 100%;
+          padding: 30px;
+          background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+          border: 4px solid #ff4444;
+        }
+
+        .error-title {
+          font-size: 16px;
+          color: #ff4444;
+          margin-bottom: 20px;
+          animation: shake 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes shake {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(5px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .logo {
+            font-size: 24px;
+          }
+          
+          .options-row {
+            grid-template-columns: 1fr;
+            gap: 15px;
+          }
+          
+          .download-buttons {
+            flex-direction: column;
+            align-items: center;
+          }
+          
+          .roast-form {
+            padding: 20px;
+          }
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="app">
+            <div class="pixel-background"></div>
+            
+            <header class="header">
+                <h1 class="logo">
+                    <span class="fire-emoji">🔥</span>
+                    ROASTIFY
+                    <span class="fire-emoji">🔥</span>
+                </h1>
+                <p class="tagline">Turn LinkedIn Profiles into Fire Rap Disses</p>
+            </header>
+
+            <div class="roast-form" id="roastForm">
+                <div class="input-group">
+                    <label class="pixel-label">LinkedIn URL</label>
+                    <input
+                        type="url"
+                        class="pixel-input"
+                        id="linkedinUrl"
+                        placeholder="https://linkedin.com/in/username"
+                    />
+                </div>
+
+                <div class="options-row">
+                    <div class="input-group">
+                        <label class="pixel-label">Voice</label>
+                        <select class="pixel-select" id="voice">
+                            <option value="alloy">🤖 Alloy</option>
+                            <option value="echo" selected>🔊 Echo</option>
+                            <option value="fable">📚 Fable</option>
+                            <option value="onyx">⚫ Onyx</option>
+                            <option value="nova">✨ Nova</option>
+                            <option value="shimmer">💫 Shimmer</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="pixel-label">Beat</label>
+                        <select class="pixel-select" id="beat">
+                            <option value="trap" selected>🔥 Trap</option>
+                            <option value="boom_bap">💥 Boom Bap</option>
+                            <option value="lofi">🎵 Lo-fi</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="pixel-label">Style</label>
+                        <select class="pixel-select" id="style">
+                            <option value="playful" selected>😄 Playful</option>
+                            <option value="aggressive">😈 Aggressive</option>
+                            <option value="witty">🧠 Witty</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="roast-button" onclick="handleRoast()">
+                    <span class="button-fire">🔥</span>
+                    ROAST 'EM!
+                    <span class="button-fire">🔥</span>
+                </button>
+            </div>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <div class="progress-message" id="progressMessage">Starting roast generation...</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+                
+                <div class="loading-animation">
+                    <span class="fire-animation">🔥</span>
+                    <span class="fire-animation">🎤</span>
+                    <span class="fire-animation">🎵</span>
+                    <span class="fire-animation">🎬</span>
+                </div>
+            </div>
+
+            <div class="results-container" id="resultsContainer" style="display: none;">
+                <h2 class="results-title">🔥 Your Roast is Ready! 🔥</h2>
+                
+                <div class="video-container">
+                    <video 
+                        controls 
+                        class="roast-video"
+                        id="roastVideo"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <div class="download-buttons">
+                    <a id="videoDownload" class="pixel-button download-button">
+                        📹 Download Video
+                    </a>
+                    <a id="audioDownload" class="pixel-button download-button">
+                        🎵 Download Audio
+                    </a>
+                </div>
+
+                <button class="roast-button another-button" onclick="resetRoast()">
+                    🔥 Roast Another Profile
+                </button>
+            </div>
+
+            <div class="error-container" id="errorContainer" style="display: none;">
+                <h2 class="error-title">😵 Roast Failed!</h2>
+                <p>Something went wrong with the roast generation.</p>
+                <button class="roast-button" onclick="resetRoast()">
+                    Try Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentJobId = null;
+        let currentWebSocket = null;
+
+        async function handleRoast() {
+            const linkedinUrl = document.getElementById('linkedinUrl').value;
+            const voice = document.getElementById('voice').value;
+            const beat = document.getElementById('beat').value;
+            const style = document.getElementById('style').value;
+
+            if (!linkedinUrl) {
+                alert('Please enter a LinkedIn URL!');
+                return;
+            }
+
+            showProgress();
+            updateProgress(0, 'Starting roast generation...');
+
+            try {
+                // Start roast generation
+                const response = await fetch('http://localhost:8000/api/roast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: linkedinUrl,
+                        voice_preference: voice,
+                        beat_type: beat,
+                        style: style,
+                        include_video: true
+                    })
+                });
+
+                const data = await response.json();
+                currentJobId = data.job_id;
+
+                // Connect WebSocket for progress updates
+                currentWebSocket = new WebSocket(`ws://localhost:8000/ws/${data.job_id}`);
+                
+                currentWebSocket.onmessage = (event) => {
+                    const update = JSON.parse(event.data);
+                    
+                    if (update.type === 'progress') {
+                        updateProgress(update.percentage, update.message);
+                    } else if (update.type === 'complete') {
+                        showResults(data.job_id);
+                        currentWebSocket.close();
+                    } else if (update.type === 'error') {
+                        showError();
+                        alert(`Error: ${update.message}`);
+                        currentWebSocket.close();
+                    }
+                };
+
+                currentWebSocket.onerror = () => {
+                    // Fallback to polling if WebSocket fails
+                    pollStatus(data.job_id);
+                };
+            } catch (error) {
+                showError();
+                alert('Failed to start roast generation!');
+            }
+        }
+
+        async function pollStatus(jobId) {
+            const interval = setInterval(async () => {
+                try {
+                    const response = await fetch(`http://localhost:8000/api/status/${jobId}`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'completed') {
+                        clearInterval(interval);
+                        showResults(jobId);
+                    } else if (data.status === 'failed') {
+                        clearInterval(interval);
+                        showError();
+                        alert(`Error: ${data.error_message}`);
+                    } else if (data.progress) {
+                        updateProgress(data.progress * 100, data.current_step);
+                    }
+                } catch (error) {
+                    console.error('Polling error:', error);
+                }
+            }, 2000);
+        }
+
+        function showProgress() {
+            document.getElementById('roastForm').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'block';
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'none';
+        }
+
+        function showResults(jobId) {
+            document.getElementById('roastForm').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            document.getElementById('errorContainer').style.display = 'none';
+
+            // Set video source and download links
+            const videoUrl = `http://localhost:8000/api/download/video/${jobId}`;
+            const audioUrl = `http://localhost:8000/api/download/audio/${jobId}`;
+            
+            document.getElementById('roastVideo').src = videoUrl;
+            document.getElementById('videoDownload').href = videoUrl;
+            document.getElementById('videoDownload').download = `roast_${jobId}.mp4`;
+            document.getElementById('audioDownload').href = audioUrl;
+            document.getElementById('audioDownload').download = `roast_${jobId}.mp3`;
+        }
+
+        function showError() {
+            document.getElementById('roastForm').style.display = 'none';
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'block';
+        }
+
+        function updateProgress(percentage, message) {
+            document.getElementById('progressFill').style.width = `${percentage}%`;
+            document.getElementById('progressPercentage').textContent = `${Math.round(percentage)}%`;
+            document.getElementById('progressMessage').textContent = message;
+        }
+
+        function resetRoast() {
+            document.getElementById('roastForm').style.display = 'block';
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'none';
+            
+            document.getElementById('linkedinUrl').value = '';
+            currentJobId = null;
+            if (currentWebSocket) {
+                currentWebSocket.close();
+                currentWebSocket = null;
+            }
+        }
+    </script>
+</body>
+</html>

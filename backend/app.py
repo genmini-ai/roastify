@@ -1,4 +1,5 @@
 import asyncio
+import io
 import logging
 import time
 from contextlib import asynccontextmanager
@@ -12,11 +13,10 @@ import uvicorn
 
 from models import (
     RoastRequest, RoastResponse, JobStatus, GenerationResult,
-    ProfileData, AnalysisResult, LyricsData, HealthCheck
+    ProfileData, LyricsData, HealthCheck
 )
 from config import settings, validate_api_keys, setup_logging
 from scraper import ProfileScraper, create_manual_profile
-from analyzer import LLMAnalyzer
 from generator import LyricsGenerator
 from audio import AudioPipeline, create_audio_config
 from video import VideoGenerator, VideoConfig
@@ -33,11 +33,29 @@ logger = logging.getLogger(__name__)
 # Job storage (in production, use Redis/database)
 active_jobs: Dict[str, JobStatus] = {}
 job_results: Dict[str, GenerationResult] = {}
+video_storage: Dict[str, bytes] = {}  # Store video bytes for download
+audio_storage: Dict[str, bytes] = {}  # Store audio bytes for download
 websocket_connections: Dict[str, WebSocket] = {}
+
+
+def search_result_to_profile(search_result: dict) -> ProfileData:
+    """Convert search result dict to ProfileData"""
+    # Extract name from title
+    title = search_result.get('title', 'Unknown Profile')
+    name = title.split(' - ')[0].split(' | ')[0].strip()
+    
+    return ProfileData(
+        url=search_result.get('url', ''),
+        platform=search_result.get('platform', 'linkedin'),
+        name=name,
+        bio=search_result.get('description', ''),
+        posts=[],
+        raw_text=f"Title: {title}\nDescription: {search_result.get('description', '')}"
+    )
+
 
 # Initialize components
 scraper = ProfileScraper()
-analyzer = LLMAnalyzer()
 lyrics_generator = LyricsGenerator()
 audio_pipeline = AudioPipeline()
 video_generator = VideoGenerator()
@@ -80,10 +98,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS middleware
+# CORS middleware - Allow frontend (port 3000) to communicate with backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"] + settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -274,13 +292,12 @@ async def get_metrics():
 async def process_roast_generation(job_id: str, request: RoastRequest):
     """Background task to generate roast"""
     
-    progress = ProgressTracker(6)  # 6 main steps
+    progress = ProgressTracker(5)  # 5 main steps
     progress.add_step(1, "Scraping profile data...")
-    progress.add_step(2, "Analyzing personality...")
-    progress.add_step(3, "Generating rap lyrics...")
-    progress.add_step(4, "Creating audio...")
-    progress.add_step(5, "Generating video...")
-    progress.add_step(6, "Finalizing results...")
+    progress.add_step(2, "Generating rap lyrics...")
+    progress.add_step(3, "Creating audio...")
+    progress.add_step(4, "Generating video...")
+    progress.add_step(5, "Finalizing results...")
     
     job_status = active_jobs[job_id]
     
@@ -290,28 +307,29 @@ async def process_roast_generation(job_id: str, request: RoastRequest):
         # Step 1: Get profile data
         await update_job_progress(job_id, progress, 1, "Scraping profile data...")
         
-        search_result = None
         if request.url:
-            profile = await scraper.scrape_profile(request.url)
-            # Also get search result for dynamic image generation
+            # Get search result and convert to ProfileData
             search_result = await scraper.scrape_profile_simple(request.url)
+            profile = search_result_to_profile(search_result)
         else:
             profile = create_manual_profile(request.manual_text, "Manual User")
+            # Create search_result for manual input
+            search_result = {
+                "url": "",
+                "platform": "manual",
+                "title": f"{profile.name} - Manual Profile",
+                "description": profile.bio or profile.raw_text[:200]
+            }
         
-        # Step 2: Analyze profile
-        await update_job_progress(job_id, progress, 2, "Analyzing personality...")
+        # Step 2: Generate lyrics directly from search result
+        await update_job_progress(job_id, progress, 2, "Writing rap lyrics...")
         
-        analysis = await analyzer.analyze_profile(profile)
-        
-        # Step 3: Generate lyrics
-        await update_job_progress(job_id, progress, 3, "Writing rap lyrics...")
-        
-        lyrics = await lyrics_generator.generate_lyrics(
-            profile, analysis, request.style
+        lyrics = await lyrics_generator.generate_lyrics_from_search(
+            search_result, request.style
         )
         
-        # Step 4: Generate audio
-        await update_job_progress(job_id, progress, 4, "Creating audio track...")
+        # Step 3: Generate audio
+        await update_job_progress(job_id, progress, 3, "Creating audio track...")
         
         audio_config = await create_audio_config(
             voice_model=request.voice_preference,
@@ -321,18 +339,25 @@ async def process_roast_generation(job_id: str, request: RoastRequest):
         
         audio_bytes = await audio_pipeline.generate_audio(lyrics, audio_config)
         
-        # Step 5: Generate video (if requested)
+        # Store audio bytes for download
+        audio_storage[job_id] = audio_bytes
+        
+        # Step 4: Generate video (if requested)
         video_bytes = None
         if request.include_video:
-            await update_job_progress(job_id, progress, 5, "Creating music video...")
+            await update_job_progress(job_id, progress, 4, "Creating music video...")
             
             video_config = VideoConfig()
             video_bytes = await video_generator.generate_video(
                 audio_bytes, lyrics, profile, video_config, search_result
             )
+            
+            # Store video bytes for download
+            if video_bytes:
+                video_storage[job_id] = video_bytes
         
-        # Step 6: Finalize
-        await update_job_progress(job_id, progress, 6, "Finalizing results...")
+        # Step 5: Finalize
+        await update_job_progress(job_id, progress, 5, "Finalizing results...")
         
         # Create result
         generation_time = (datetime.now() - start_time).total_seconds()
@@ -340,7 +365,6 @@ async def process_roast_generation(job_id: str, request: RoastRequest):
         result = GenerationResult(
             job_id=job_id,
             profile=profile,
-            analysis=analysis,
             lyrics=lyrics,
             audio_url=f"/api/download/audio/{job_id}",  # In production, use cloud storage
             video_url=f"/api/download/video/{job_id}" if video_bytes else None,
@@ -362,6 +386,17 @@ async def process_roast_generation(job_id: str, request: RoastRequest):
         
         # Store audio/video files (in production, upload to cloud storage)
         # For now, store in memory or temp files
+        
+        # Send completion notification via WebSocket
+        if job_id in websocket_connections:
+            try:
+                await websocket_connections[job_id].send_json({
+                    "type": "complete",
+                    "job_id": job_id,
+                    "message": "Roast generation completed!"
+                })
+            except:
+                pass
         
         logger.info(f"Roast generation completed for job {job_id} in {generation_time:.2f}s")
         
@@ -411,11 +446,12 @@ async def update_job_progress(
     if job_id in websocket_connections:
         try:
             await websocket_connections[job_id].send_json({
-                "type": "progress_update",
+                "type": "progress",
                 "job_id": job_id,
                 "progress": job_status.progress,
-                "current_step": job_status.current_step,
-                "estimated_remaining": progress_data.get("estimated_remaining")
+                "current_step": job_status.steps_completed,
+                "message": job_status.current_step,
+                "percentage": job_status.progress * 100
             })
         except Exception as e:
             logger.warning(f"Failed to send WebSocket update: {e}")
@@ -425,17 +461,31 @@ async def update_job_progress(
 @app.get("/api/download/audio/{job_id}")
 async def download_audio(job_id: str):
     """Download audio file"""
-    # In production, redirect to cloud storage URL
-    # For now, return placeholder
-    raise HTTPException(status_code=501, detail="Download not implemented yet")
+    if job_id not in audio_storage:
+        raise HTTPException(status_code=404, detail="Audio not found")
+    
+    audio_bytes = audio_storage[job_id]
+    
+    return StreamingResponse(
+        io.BytesIO(audio_bytes),
+        media_type="audio/mpeg",
+        headers={"Content-Disposition": f"attachment; filename=roast_{job_id}.mp3"}
+    )
 
 
 @app.get("/api/download/video/{job_id}")  
 async def download_video(job_id: str):
     """Download video file"""
-    # In production, redirect to cloud storage URL
-    # For now, return placeholder
-    raise HTTPException(status_code=501, detail="Download not implemented yet")
+    if job_id not in video_storage:
+        raise HTTPException(status_code=404, detail="Video not found")
+    
+    video_bytes = video_storage[job_id]
+    
+    return StreamingResponse(
+        io.BytesIO(video_bytes),
+        media_type="video/mp4",
+        headers={"Content-Disposition": f"attachment; filename=roast_{job_id}.mp4"}
+    )
 
 
 if __name__ == "__main__":

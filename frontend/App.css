@@ -1,0 +1,427 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P:wght@400&display=swap');
+
+/* Reset and Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Press Start 2P', monospace;
+  background: #000;
+  color: #fff;
+  overflow-x: hidden;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.app {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Animated Pixel Background */
+.pixel-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: 
+    radial-gradient(circle at 25% 25%, #111 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, #222 0%, transparent 50%),
+    linear-gradient(45deg, #000 25%, #111 25%, #111 50%, #000 50%, #000 75%, #111 75%);
+  background-size: 40px 40px, 40px 40px, 20px 20px;
+  animation: pixelMove 20s ease-in-out infinite;
+}
+
+@keyframes pixelMove {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-10px, -10px); }
+  50% { transform: translate(10px, -5px); }
+  75% { transform: translate(-5px, 10px); }
+}
+
+/* Header Styles */
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: glowPulse 2s ease-in-out infinite alternate;
+}
+
+.logo {
+  font-size: 32px;
+  margin-bottom: 10px;
+  text-shadow: 
+    0 0 10px #ff4444,
+    0 0 20px #ff4444,
+    0 0 30px #ff4444;
+  letter-spacing: 4px;
+}
+
+.fire-emoji {
+  animation: fireFlicker 1.5s ease-in-out infinite alternate;
+  display: inline-block;
+  margin: 0 10px;
+}
+
+@keyframes fireFlicker {
+  0% { transform: scale(1) rotate(-5deg); }
+  100% { transform: scale(1.2) rotate(5deg); }
+}
+
+.tagline {
+  font-size: 12px;
+  color: #ff6666;
+  animation: typewriter 3s steps(30) 1s both;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid #ff6666;
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes glowPulse {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.3); }
+}
+
+/* Form Styles */
+.roast-form {
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  border: 4px solid #444;
+  border-image: 
+    linear-gradient(45deg, #666, #333) 1;
+  padding: 30px;
+  border-radius: 0;
+  box-shadow: 
+    inset 0 0 20px rgba(0,0,0,0.8),
+    0 0 40px rgba(255, 68, 68, 0.3);
+  max-width: 600px;
+  width: 100%;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.pixel-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #ff8888;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pixel-input {
+  width: 100%;
+  padding: 12px;
+  background: #000;
+  border: 2px solid #444;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  transition: all 0.3s ease;
+}
+
+.pixel-input:focus {
+  outline: none;
+  border-color: #ff4444;
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+  animation: pixelGlow 0.5s ease;
+}
+
+@keyframes pixelGlow {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.pixel-select {
+  width: 100%;
+  padding: 12px;
+  background: #000;
+  border: 2px solid #444;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pixel-select:focus {
+  outline: none;
+  border-color: #ff4444;
+  box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+}
+
+.options-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+/* Button Styles */
+.roast-button {
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(135deg, #ff4444, #cc0000);
+  border: 4px solid #ff6666;
+  color: #fff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.roast-button:hover {
+  background: linear-gradient(135deg, #ff6666, #ff0000);
+  transform: scale(1.05);
+  box-shadow: 
+    0 0 30px rgba(255, 68, 68, 0.8),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  animation: buttonPulse 0.6s ease infinite;
+}
+
+@keyframes buttonPulse {
+  0%, 100% { transform: scale(1.05); }
+  50% { transform: scale(1.08); }
+}
+
+.button-fire {
+  animation: fireFlicker 1s ease-in-out infinite alternate;
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.roast-button:active {
+  transform: scale(0.98);
+}
+
+/* Progress Styles */
+.progress-container {
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  padding: 30px;
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  border: 4px solid #444;
+  box-shadow: 
+    inset 0 0 20px rgba(0,0,0,0.8),
+    0 0 40px rgba(255, 68, 68, 0.3);
+}
+
+.progress-message {
+  font-size: 12px;
+  color: #ff8888;
+  margin-bottom: 20px;
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+  0% { text-shadow: 0 0 5px #ff4444; }
+  100% { text-shadow: 0 0 15px #ff4444, 0 0 25px #ff4444; }
+}
+
+.progress-bar {
+  width: 100%;
+  height: 30px;
+  background: #000;
+  border: 2px solid #444;
+  margin-bottom: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff4444, #ff6666, #ff4444);
+  transition: width 0.5s ease;
+  position: relative;
+  animation: progressShine 2s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+.progress-pixels {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    rgba(255,255,255,0.1) 2px,
+    transparent 4px
+  );
+  animation: pixelScroll 1s linear infinite;
+}
+
+@keyframes pixelScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(10px); }
+}
+
+.progress-percentage {
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px #ff4444;
+}
+
+.loading-animation {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.fire-animation {
+  font-size: 24px;
+  animation: bounce 1.5s ease-in-out infinite;
+}
+
+.fire-animation:nth-child(2) { animation-delay: 0.3s; }
+.fire-animation:nth-child(3) { animation-delay: 0.6s; }
+.fire-animation:nth-child(4) { animation-delay: 0.9s; }
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.2); }
+}
+
+/* Results Styles */
+.results-container {
+  text-align: center;
+  max-width: 800px;
+  width: 100%;
+}
+
+.results-title {
+  font-size: 18px;
+  margin-bottom: 30px;
+  color: #ff4444;
+  text-shadow: 0 0 20px #ff4444;
+  animation: glowPulse 2s ease-in-out infinite alternate;
+}
+
+.video-container {
+  margin-bottom: 30px;
+  border: 4px solid #444;
+  box-shadow: 0 0 40px rgba(255, 68, 68, 0.3);
+}
+
+.roast-video {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  background: #000;
+}
+
+.download-buttons {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pixel-button {
+  padding: 15px 25px;
+  background: linear-gradient(135deg, #333, #555);
+  border: 2px solid #666;
+  color: #fff;
+  text-decoration: none;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.pixel-button:hover {
+  background: linear-gradient(135deg, #555, #777);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+}
+
+.another-button {
+  background: linear-gradient(135deg, #ff4444, #cc0000);
+  font-size: 12px;
+}
+
+/* Error Styles */
+.error-container {
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  padding: 30px;
+  background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+  border: 4px solid #ff4444;
+}
+
+.error-title {
+  font-size: 16px;
+  color: #ff4444;
+  margin-bottom: 20px;
+  animation: shake 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(5px); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .logo {
+    font-size: 24px;
+  }
+  
+  .options-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .download-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .roast-form {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 18px;
+  }
+  
+  .tagline {
+    font-size: 10px;
+  }
+  
+  .roast-button {
+    font-size: 12px;
+    padding: 15px;
+  }
+}

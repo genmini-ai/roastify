@@ -51,16 +51,20 @@ class LLMAnalyzer:
         logger.info(f"Analyzing profile for {profile.name} (PDF: {pdf_bytes is not None})")
         
         try:
-            # Try Gemini first if we have PDF (best for document understanding)
-            if pdf_bytes and self.gemini_analyzer:
+            # Try Gemini first (best for both PDF and text analysis)
+            if self.gemini_analyzer:
                 try:
-                    logger.info("Using Gemini for PDF-based analysis")
-                    analysis = await self.gemini_analyzer.analyze_profile_pdf(pdf_bytes, profile.name)
+                    if pdf_bytes:
+                        logger.info("Using Gemini for PDF-based analysis")
+                        analysis = await self.gemini_analyzer.analyze_profile_pdf(pdf_bytes, profile.name)
+                    else:
+                        logger.info("Using Gemini for text-based analysis")
+                        analysis = await self.gemini_analyzer.analyze_profile_text(profile.raw_text, profile.name)
                     return analysis
                 except Exception as e:
                     logger.warning(f"Gemini analysis failed: {e}")
             
-            # Fallback to text-based analysis with OpenAI/Anthropic
+            # Fallback to OpenAI/Anthropic
             analysis = await self._analyze_with_openai(profile)
             if not analysis:
                 analysis = await self._analyze_with_anthropic(profile)

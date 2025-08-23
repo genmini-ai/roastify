@@ -92,6 +92,9 @@ class ProfileScraper:
                 "error": "missing_api_key"
             }
         
+        # Rate limit: 1 call per second for free plan
+        await asyncio.sleep(1.1)  # 1.1s to be safe
+        
         try:
             search_query = self._extract_search_query(url, platform)
             
@@ -156,6 +159,9 @@ class ProfileScraper:
                 name="Manual Input Required",
                 raw_text=f"No Brave API key configured. Please provide profile information manually for: {url}"
             ), None
+        
+        # Rate limit: 1 call per second for free plan
+        await asyncio.sleep(1.1)  # 1.1s to be safe
         
         try:
             # Extract name from URL for better search

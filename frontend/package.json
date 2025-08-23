@@ -1,0 +1,24 @@
+{
+  "name": "roastify-frontend",
+  "version": "1.0.0",
+  "description": "🔥 Roastify Frontend - Turn LinkedIn Profiles into Fire Rap Disses",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 3000",
+    "dev": "python -m http.server 3000",
+    "serve": "python -m http.server 3000"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "keywords": [
+    "react",
+    "roast",
+    "linkedin",
+    "rap",
+    "ai"
+  ],
+  "author": "Roastify Team",
+  "license": "MIT"
+}

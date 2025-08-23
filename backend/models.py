@@ -106,7 +106,7 @@ class GenerationResult(BaseModel):
     """Complete generation result"""
     job_id: str
     profile: ProfileData
-    analysis: AnalysisResult
+    analysis: Optional[AnalysisResult] = None
     lyrics: LyricsData
     audio_url: Optional[str] = None
     video_url: Optional[str] = None
