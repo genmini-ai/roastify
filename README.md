@@ -305,5 +305,5 @@ If we win:
 
 ---
 
-*Built with 💔 and 🔥 at [Hackathon Name]*
+*Built with 💔 and 🔥 at YC Agents Hackathon*
 *"Transforming content and feelings since 2024"*
